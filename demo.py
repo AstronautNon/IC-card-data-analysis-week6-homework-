@@ -1,7 +1,7 @@
 import pandas as pd
 #任务1
 #读取数据
-df = pd.read_csv('ICData.csv')
+df = pd.read_csv('ICData.csv', sep='\t')
 #打印前五行数据
 print("--- 数据预览 (前5行) ---")
 print(df.head())
