@@ -8,3 +8,5 @@ print(df.head())
 #打印数据基本信息
 print("\n--- 数据基本信息 ---")
 print(df.info())
+#交易时间 列的类型更改为datatime
+df['交易时间'] = pd.to_datetime(df['交易时间'], errors='coerce')
