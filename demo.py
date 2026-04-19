@@ -142,7 +142,7 @@ plt.show()
 
 #任务三
 #调用函数
-result_df = calculate_route_stats(df)
+result_df = analyze_route_stops(df)
 #打印前十行
 print("📊 各线路平均搭乘站点数统计 (前10名)：")
 print(result_df.head(10))
