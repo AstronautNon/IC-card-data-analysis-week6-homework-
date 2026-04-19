@@ -142,6 +142,8 @@ def export_driver_info(df):
         print(path)
 
 
+
+
 #任务1
 #读取数据
 df = pd.read_csv('ICData.csv')
@@ -291,3 +293,29 @@ calculate_phf_formatted(df)
 #任务五
 #调用路线驾驶员信息生成函数
 export_driver_info(df)
+
+#任务六
+# --- 1. TOP 10 司机 ---
+# 统计 '驾驶员编号' 列中每个编号出现的次数（即服务人次）
+top_10_drivers = df['驾驶员编号'].value_counts().head(10)
+print("👤 TOP 10 服务人次最多的司机：")
+print(top_10_drivers)
+print("-" * 30)
+# --- 2. TOP 10 线路 ---
+# 统计 '线路号' 列
+top_10_routes = df['线路号'].value_counts().head(10)
+print("🚌 TOP 10 服务人次最多的线路：")
+print(top_10_routes)
+print("-" * 30)
+# --- 3. TOP 10 上车点 ---
+# 统计 '上车点' 列
+top_10_stops = df['上车点'].value_counts().head(10)
+print("📍 TOP 10 服务人次最多的上车点：")
+print(top_10_stops)
+print("-" * 30)
+# --- 4. TOP 10 车辆 ---
+# 统计 '车辆编号' 列
+top_10_vehicles = df['车辆编号'].value_counts().head(10)
+print("🚙 TOP 10 服务人次最多的车辆：")
+print(top_10_vehicles)
+
