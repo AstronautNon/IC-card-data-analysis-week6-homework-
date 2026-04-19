@@ -142,8 +142,6 @@ def export_driver_info(df):
         print(path)
 
 
-
-
 #任务1
 #读取数据
 df = pd.read_csv('ICData.csv')
@@ -250,7 +248,7 @@ plt.legend()
 #自动调整布局，防止标签被遮挡
 plt.tight_layout()
 #保存图像
-#plt.savefig('hour_distribution.png', dpi=150, bbox_inches='tight')
+plt.savefig('hour_distribution.png', dpi=150, bbox_inches='tight')
 print("✅ 图表已成功保存为 'hour_distribution.png'")
 #显示图表
 plt.show()
@@ -281,7 +279,7 @@ plt.ylim(bottom=0)
 # 添加网格线，方便读数
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 # 保存图像
-#plt.savefig('route_stops.png', dpi=150, bbox_inches='tight')
+plt.savefig('route_stops.png', dpi=150, bbox_inches='tight')
 print("✅ 图像已保存为 route_stops.png")
 # 显示图像
 plt.show()
@@ -323,7 +321,7 @@ print(top_10_vehicles)
 # --- 1. 数据准备与整合 ---
 top_10_drivers = df['驾驶员编号'].value_counts().head(10)
 top_10_routes = df['线路号'].value_counts().head(10)
-top_10_stops = df['上车点'].value_counts().head(10)
+top_10_stops = df['上车站点'].value_counts().head(10)
 top_10_vehicles = df['车辆编号'].value_counts().head(10)
 # 构造热力图所需的数据矩阵
 # 将四个 Series 合并成一个 DataFrame，每一行是一个维度
