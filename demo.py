@@ -30,6 +30,51 @@ def analyze_route_stops(df, route_col='线路号', stops_col='ride_stops'):
 
     return stats
 
+
+def calculate_phf(df):
+    """
+    计算高峰小时系数 (PHF5 和 PHF15)
+    """
+    # 确保时间列是 datetime 类型
+    if not np.issubdtype(df['交易时间'].dtype, np.datetime64):
+        df['交易时间'] = pd.to_datetime(df['交易时间'])
+
+    # 1. 统计全天每小时刷卡量
+    # 按小时分组统计数量
+    hourly_counts = df.groupby(df['交易时间'].dt.hour).size()
+
+    # 2. 找出高峰小时 (刷卡量最大的那个小时)
+    peak_hour = hourly_counts.idxmax()
+    peak_hour_volume = hourly_counts.max()
+
+    print(f"📊 全天刷卡量统计完成")
+    print(f"🚀 高峰小时: {peak_hour}点")
+    print(f"🔢 高峰小时刷卡量: {peak_hour_volume}")
+
+    # 3. 提取高峰小时的数据子集
+    peak_hour_data = df[df['交易时间'].dt.hour == peak_hour]
+
+    # 4. 统计每 5 分钟和每 15 分钟的刷卡量
+    # 利用 dt.floor 将时间向下取整到最近的 5分钟 或 15分钟
+    # 例如: 07:08 -> 07:05, 07:14 -> 07:00
+
+    # 统计每5分钟的量
+    counts_5min = peak_hour_data.groupby(peak_hour_data['交易时间'].dt.floor('5min')).size()
+    max_5min_volume = counts_5min.max()
+
+    # 统计每15分钟的量
+    counts_15min = peak_hour_data.groupby(peak_hour_data['交易时间'].dt.floor('15min')).size()
+    max_15min_volume = counts_15min.max()
+
+    # 5. 计算 PHF
+    # PHF5 = 高峰小时刷卡量 / (12 * 高峰小时内最大5分钟刷卡量)
+    phf5 = peak_hour_volume / (12 * max_5min_volume)
+
+    # PHF15 = 高峰小时刷卡量 / (4 * 高峰小时内最大15分钟刷卡量)
+    phf15 = peak_hour_volume / (4 * max_15min_volume)
+
+    return phf5, phf15
+
 #任务1
 #读取数据
 df = pd.read_csv('ICData.csv')
@@ -171,3 +216,6 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 print("✅ 图像已保存为 route_stops.png")
 # 显示图像
 plt.show()
+
+#任务四
+phf5_result, phf15_result = calculate_phf(df)
