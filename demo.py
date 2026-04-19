@@ -1,0 +1,10 @@
+import pandas as pd
+#任务1
+#读取数据
+df = pd.read_csv('ICData.csv')
+#打印前五行数据
+print("--- 数据预览 (前5行) ---")
+print(df.head())
+#打印数据基本信息
+print("\n--- 数据基本信息 ---")
+print(df.info())
