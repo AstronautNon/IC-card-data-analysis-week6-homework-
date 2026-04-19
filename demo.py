@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
 
 #函数定义区
 def analyze_route_stops(df, route_col='线路号', stops_col='ride_stops'):
@@ -82,6 +83,63 @@ def calculate_phf_formatted(df):
     print(f"PHF5  = {peak_hour_volume} / (12 × {max_5min_volume}) = {phf5:.4f}")
     print(f"最大15分钟刷卡量（{max_15min_start_time.strftime('%H:%M')}~{max_15_end.strftime('%H:%M')}）：{max_15min_volume} 次")
     print(f"PHF15 = {peak_hour_volume} / ( 4 × {max_15min_volume}) = {phf15:.4f}")
+
+
+def export_driver_info(df):
+    """
+    筛选线路 1101-1120，生成车辆与驾驶员对应关系的 txt 文件
+    """
+    # 1. 筛选线路号在 1101 到 1120 之间的数据
+    # 假设线路号列名为 '线路号'，如果是字符串类型可能需要先转换
+    target_routes = range(1101, 1121)  # 1101 到 1120 (包含)
+
+    # 确保线路号是整数类型进行比较
+    if df['线路号'].dtype == 'object':
+        df['线路号'] = df['线路号'].astype(int)
+
+    filtered_df = df[df['线路号'].isin(target_routes)]
+
+    # 2. 创建根目录文件夹
+    folder_name = '路线驾驶员信息'
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+        print(f"✅ 已创建文件夹: {folder_name}")
+
+    # 3. 遍历每条线路，生成文件
+    generated_files = []
+
+    for route in target_routes:
+        # 筛选当前线路的数据
+        route_df = filtered_df[filtered_df['线路号'] == route]
+
+        # 如果该线路没有数据，跳过
+        if route_df.empty:
+            continue
+
+        # 提取车辆编号和驾驶员编号，并去重
+        # 使用 drop_duplicates 确保 (车辆, 驾驶员) 组合不重复
+        relation_df = route_df[['车辆编号', '驾驶员编号']].drop_duplicates()
+
+        # 定义文件路径
+        file_path = os.path.join(folder_name, f"{route}.txt")
+
+        # 写入文件
+        with open(file_path, 'w', encoding='utf-8') as f:
+            # 写入第一行：线路号
+            f.write(f"线路号: {route}\n")
+            # 写入表头
+            f.write("车辆编号\t驾驶员编号\n")
+
+            # 写入每一行数据
+            for _, row in relation_df.iterrows():
+                f.write(f"{row['车辆编号']}\t{row['驾驶员编号']}\n")
+
+        generated_files.append(file_path)
+
+    # 4. 打印所有生成的文件路径
+    print(f"\n📄 共生成 {len(generated_files)} 个文件：")
+    for path in generated_files:
+        print(path)
 
 
 #任务1
@@ -227,4 +285,9 @@ print("✅ 图像已保存为 route_stops.png")
 plt.show()
 
 #任务四
+#调用高峰小时系数函数
 calculate_phf_formatted(df)
+
+#任务五
+#调用路线驾驶员信息生成函数
+export_driver_info(df)
