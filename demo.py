@@ -295,6 +295,7 @@ calculate_phf_formatted(df)
 export_driver_info(df)
 
 #任务六
+#各维度top10
 # --- 1. TOP 10 司机 ---
 # 统计 '驾驶员编号' 列中每个编号出现的次数（即服务人次）
 top_10_drivers = df['驾驶员编号'].value_counts().head(10)
@@ -308,8 +309,8 @@ print("🚌 TOP 10 服务人次最多的线路：")
 print(top_10_routes)
 print("-" * 30)
 # --- 3. TOP 10 上车点 ---
-# 统计 '上车点' 列
-top_10_stops = df['上车点'].value_counts().head(10)
+# 统计 '上车站点' 列
+top_10_stops = df['上车站点'].value_counts().head(10)
 print("📍 TOP 10 服务人次最多的上车点：")
 print(top_10_stops)
 print("-" * 30)
@@ -318,4 +319,54 @@ print("-" * 30)
 top_10_vehicles = df['车辆编号'].value_counts().head(10)
 print("🚙 TOP 10 服务人次最多的车辆：")
 print(top_10_vehicles)
+#热力图可视化
+# --- 1. 数据准备与整合 ---
+top_10_drivers = df['驾驶员编号'].value_counts().head(10)
+top_10_routes = df['线路号'].value_counts().head(10)
+top_10_stops = df['上车点'].value_counts().head(10)
+top_10_vehicles = df['车辆编号'].value_counts().head(10)
+# 构造热力图所需的数据矩阵
+# 将四个 Series 合并成一个 DataFrame，每一行是一个维度
+# 使用 reset_index(drop=True) 确保索引对齐（都是 Top1 到 Top10）
+heatmap_data = pd.DataFrame({
+    '司机': top_10_drivers.values,
+    '线路': top_10_routes.values,
+    '上车站点': top_10_stops.values,
+    '车辆': top_10_vehicles.values
+}, index=[f'Top{i}' for i in range(1, 11)])
+# 转置 DataFrame，让行变成维度，列变成 Top1~Top10
+# 这样行标签就是：司机、线路、上车站点、车辆
+# 列标签就是：Top1, Top2...
+heatmap_data = heatmap_data.T
+# --- 2. 绘制热力图 ---
+plt.figure(figsize=(12, 8))
+# 绘制热力图
+sns.heatmap(
+    heatmap_data,
+    annot=True,      # 显示数值
+    fmt='d',         # 数值格式为整数
+    cmap='YlOrRd',   # 颜色主题：黄-橙-红
+    linewidths=.5,   # 格子之间的间隔线宽度
+    linecolor='gray' # 间隔线颜色
+)
+# --- 3. 图表美化 ---
+# 主标题
+plt.title('各维度 Top 10 实体服务人次热力图', fontsize=18, pad=20)
+# 副标题 (使用 text 函数在标题下方添加说明)
+plt.gcf().text(0.5, 0.92, '统计范围：全时段数据 | 指标：服务人次（刷卡量）',
+               ha='center', fontsize=12, color='gray')
+# X 轴标签
+plt.xlabel('排名 (Top 1 ~ Top 10)', fontsize=12)
+# Y 轴标签
+plt.ylabel('维度', fontsize=12)
+# 旋转 X 轴标签 (虽然 Top1-10 很短不需要旋转，但按你的要求设为 0)
+plt.xticks(rotation=0)
+# 调整布局，防止副标题被遮挡
+plt.tight_layout(rect=[0, 0, 1, 0.90])
+# --- 4. 保存与显示 ---
+# 保存图像
+plt.savefig('performance_heatmap.png', dpi=150, bbox_inches='tight')
+print("✅ 热力图已保存为 performance_heatmap.png")
+# 显示图像
+plt.show()
 
