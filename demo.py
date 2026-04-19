@@ -1,6 +1,7 @@
 #库导入区
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 #任务1
 #读取数据
@@ -42,3 +43,29 @@ if total_missing > 0:
 else:
     print("\n✅ 数据完整，未发现缺失值。")
 
+#任务二
+#统计早高峰前和深夜时段的刷卡量
+#提取相关列转换为 NumPy 数组
+swipe_type = df['刷卡类型'].values
+hours = df['hour'].values
+#计算全天总刷卡量
+total_count = len(df)
+#使用布尔索引进行筛选
+# 逻辑：(刷卡类型为0) 与 (小时 < 7)
+morning_mask = (swipe_type == 0) & (hours < 7)
+morning_count = np.sum(morning_mask) # 统计 True 的数量
+# 逻辑：(刷卡类型为0) 与 (小时 >= 22)
+night_mask = (swipe_type == 0) & (hours >= 22)
+night_count = np.sum(night_mask) # 统计 True 的数量
+#计算百分比
+if total_count > 0:
+    morning_pct = (morning_count / total_count) * 100
+    night_pct = (night_count / total_count) * 100
+else:
+    morning_pct = night_pct = 0
+#打印结果
+print("📊 刷卡类型为0的统计分析 (基于NumPy):")
+print("-" * 30)
+print(f"全天总刷卡量: {total_count}")
+print(f"早高峰前 (hour < 7): {morning_count} 次 (占比: {morning_pct:.2f}%)")
+print(f"深夜时段 (hour >= 22): {night_count} 次 (占比: {night_pct:.2f}%)")
