@@ -74,14 +74,14 @@ def calculate_phf(df):
 
     return phf5, phf15
 
-# --- 调用示例 ---
+    # --- 调用示例 ---
 
-# 假设 df 是你的原始数据，且有一列叫 '刷卡时间'
-# phf5_result, phf15_result = calculate_phf(df)
+    # 假设 df 是你的原始数据，且有一列叫 '刷卡时间'
+    # phf5_result, phf15_result = calculate_phf(df)
 
-# 打印结果 (保留4位小数)
-# print(f"PHF5 计算结果: {phf5_result:.4f}")
-# print(f"PHF15 计算结果: {phf15_result:.4f}")
+    # 打印结果 (保留4位小数)
+    # print(f"PHF5 计算结果: {phf5_result:.4f}")
+    # print(f"PHF15 计算结果: {phf15_result:.4f}")
 AI的问题：与要求输出格式不符，没有用ICData.csv文件中的列名
 优化后的prompt：
 import pandas as pd
