@@ -14,3 +14,12 @@ print(df.info())
 df['交易时间'] = pd.to_datetime(df['交易时间'], errors='coerce')
 # 提取“交易时间”列的小时部分，并赋值给新列 'hour'
 df['hour'] = df['交易时间'].dt.hour
+#新增搭乘站点数列
+df['上车站点'] = pd.to_numeric(df['上车站点'], errors='coerce')
+df['下车站点'] = pd.to_numeric(df['下车站点'], errors='coerce')
+df['ride_stops'] = (df['上车站点'] - df['下车站点']).abs()
+#找出异常
+abnormal_rows = df[df['ride_stops'] == 0]
+deleted_count = len(abnormal_rows)
+df = df[df['ride_stops'] != 0].reset_index(drop=True)
+print(f"🗑️ 已删除异常行数: {deleted_count}")
