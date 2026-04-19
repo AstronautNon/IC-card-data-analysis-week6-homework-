@@ -1,5 +1,6 @@
 #库导入区
 import pandas as pd
+import numpy as np
 
 #任务1
 #读取数据
@@ -23,3 +24,21 @@ abnormal_rows = df[df['ride_stops'] == 0]
 deleted_count = len(abnormal_rows)
 df = df[df['ride_stops'] != 0].reset_index(drop=True)
 print(f"🗑️ 已删除异常行数: {deleted_count}")
+#找出缺失值
+missing_values = df.isnull().sum()
+print("🔍 各列缺失值数量统计：")
+print(missing_values)
+#删除
+total_missing = missing_values.sum()
+if total_missing > 0:
+    print(f"\n⚠️ 发现总计 {total_missing} 个缺失值，正在删除包含缺失值的行...")
+    rows_before = len(df)
+    # 删除任何包含缺失值的行
+    # how='any' 表示只要有一个缺失就删，axis=0 表示按行删
+    df = df.dropna(how='any', axis=0).reset_index(drop=True)
+    # 计算删除的行数
+    rows_deleted = rows_before - len(df)
+    print(f"✅ 清洗完成，共删除 {rows_deleted} 行数据。")
+else:
+    print("\n✅ 数据完整，未发现缺失值。")
+
