@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 #函数定义区
 def analyze_route_stops(df, route_col='线路号', stops_col='ride_stops'):
@@ -146,3 +147,27 @@ result_df = analyze_route_stops(df)
 #打印前十行
 print("📊 各线路平均搭乘站点数统计 (前10名)：")
 print(result_df.head(10))
+#可视化
+plot_data = result_df.head(15)
+plt.figure(figsize=(12, 8))
+sns.barplot(
+    data=plot_data,
+    x='线路号',
+    y='mean_stops',
+    errorbar=('sd', 0),
+    capsize=0.3,
+    dodge=False,
+    palette='viridis'
+)
+plt.title('各线路平均搭乘站点数 Top 10 (带标准差)', fontsize=16, pad=20)
+plt.xlabel('线路号', fontsize=12)
+plt.ylabel('平均搭乘站点数', fontsize=12)
+# 设置 y 轴范围从 0 开始，避免截断柱子
+plt.ylim(bottom=0)
+# 添加网格线，方便读数
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+# 保存图像
+#plt.savefig('route_stops.png', dpi=150, bbox_inches='tight')
+print("✅ 图像已保存为 route_stops.png")
+# 显示图像
+plt.show()
