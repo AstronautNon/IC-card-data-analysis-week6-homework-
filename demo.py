@@ -36,27 +36,27 @@ def calculate_phf_formatted(df):
     计算并打印指定格式的 PHF 报告
     """
     # 确保时间列是 datetime 类型
-    if not np.issubdtype(df['刷卡时间'].dtype, np.datetime64):
-        df['刷卡时间'] = pd.to_datetime(df['刷卡时间'])
+    if not np.issubdtype(df['交易时间'].dtype, np.datetime64):
+        df['交易时间'] = pd.to_datetime(df['交易时间'])
 
     # 1. 统计全天每小时刷卡量
-    hourly_counts = df.groupby(df['刷卡时间'].dt.hour).size()
+    hourly_counts = df.groupby(df['交易时间'].dt.hour).size()
 
     # 2. 找出高峰小时
     peak_hour = hourly_counts.idxmax()
     peak_hour_volume = hourly_counts.max()
 
     # 3. 提取高峰小时的数据子集
-    peak_hour_data = df[df['刷卡时间'].dt.hour == peak_hour]
+    peak_hour_data = df[df['交易时间'].dt.hour == peak_hour]
 
     # 4. 统计每 5 分钟和每 15 分钟的刷卡量
     # 使用 dt.floor 向下取整
-    counts_5min = peak_hour_data.groupby(peak_hour_data['刷卡时间'].dt.floor('5min')).size()
+    counts_5min = peak_hour_data.groupby(peak_hour_data['交易时间'].dt.floor('5min')).size()
     max_5min_volume = counts_5min.max()
     # 找到最大5分钟对应的起始时间
     max_5min_start_time = counts_5min.idxmax()
 
-    counts_15min = peak_hour_data.groupby(peak_hour_data['刷卡时间'].dt.floor('15min')).size()
+    counts_15min = peak_hour_data.groupby(peak_hour_data['交易时间'].dt.floor('15min')).size()
     max_15min_volume = counts_15min.max()
     # 找到最大15分钟对应的起始时间
     max_15min_start_time = counts_15min.idxmax()
