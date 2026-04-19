@@ -3,6 +3,32 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+#函数定义区
+def analyze_route_stops(df, route_col='线路号', stops_col='ride_stops'):
+    """
+    计算各线路乘客的平均搭乘站点数及其标准差。
+    Parameters
+    ----------
+    df : pd.DataFrame  预处理后的数据集
+    route_col : str    线路号列名
+    stops_col : str    搭乘站点数列名
+    Returns
+    -------
+    pd.DataFrame  包含列：线路号、mean_stops、std_stops，按 mean_stops 降序排列
+    """
+    # 1. 分组并聚合计算
+    # 对指定的线路列分组，对站点列计算均值和标准差
+    stats = df.groupby(route_col)[stops_col].agg(
+        mean_stops='mean',  # 计算平均值
+        std_stops='std'  # 计算标准差
+    ).reset_index()  # 将分组后的索引还原为普通列
+
+    # 2. 排序
+    # 按平均搭乘站点数降序排列
+    stats = stats.sort_values(by='mean_stops', ascending=False).reset_index(drop=True)
+
+    return stats
+
 #任务1
 #读取数据
 df = pd.read_csv('ICData.csv')
@@ -108,5 +134,15 @@ plt.grid(axis='y', linestyle='--', alpha=0.7)
 plt.legend()
 #自动调整布局，防止标签被遮挡
 plt.tight_layout()
+#保存图像
+#plt.savefig('hour_distribution.png', dpi=150, bbox_inches='tight')
+print("✅ 图表已成功保存为 'hour_distribution.png'")
 #显示图表
 plt.show()
+
+#任务三
+#调用函数
+result_df = calculate_route_stats(df)
+#打印前十行
+print("📊 各线路平均搭乘站点数统计 (前10名)：")
+print(result_df.head(10))
