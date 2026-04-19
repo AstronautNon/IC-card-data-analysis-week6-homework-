@@ -69,3 +69,44 @@ print("-" * 30)
 print(f"全天总刷卡量: {total_count}")
 print(f"早高峰前 (hour < 7): {morning_count} 次 (占比: {morning_pct:.2f}%)")
 print(f"深夜时段 (hour >= 22): {night_count} 次 (占比: {night_pct:.2f}%)")
+#绘图
+# 统计每个小时的刷卡量
+# value_counts() 统计频次，sort_index() 按小时排序，reindex 确保 0-23 点都有数据（没有的补0）
+hourly_counts = df['hour'].value_counts().sort_index().reindex(range(24), fill_value=0)
+# 提取 x轴 (小时) 和 y轴 (数量)
+x_hours = hourly_counts.index
+y_counts = hourly_counts.values
+# 定义高亮时段的掩码
+# 早峰前: 0, 1, ..., 6
+morning_mask = x_hours < 7
+# 深夜: 22, 23
+night_mask = x_hours >= 22
+# 普通时段: 其他
+normal_mask = ~(morning_mask | night_mask)
+#设置绘图风格和中文支持
+plt.style.use('seaborn-v0_8-whitegrid') # 使用简洁的网格风格
+plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'DejaVu Sans']
+plt.rcParams['axes.unicode_minus'] = False # 解决负号显示问题
+#创建画布
+plt.figure(figsize=(14, 7))
+#分段绘制柱状图
+# 第一步：先画普通时段（灰色）
+plt.bar(x_hours[normal_mask], y_counts[normal_mask], color='#d3d3d3', label='普通时段')
+# 第二步：画早高峰前（蓝色），覆盖在上方
+plt.bar(x_hours[morning_mask], y_counts[morning_mask], color='#4c72b0', label='早高峰前 (0-6点)')
+# 第三步：画深夜时段（红色），覆盖在上方
+plt.bar(x_hours[night_mask], y_counts[night_mask], color='#c44e52', label='深夜 (22-23点)')
+#图表美化
+plt.title('24小时刷卡量分布可视化', fontsize=18, pad=20)
+plt.xlabel('小时', fontsize=12)
+plt.ylabel('刷卡量 (次)', fontsize=12)
+#设置 x 轴刻度：0 到 23，步长为 2
+plt.xticks(range(0, 24, 2))
+#添加水平网格线 (axis='y' 表示只显示水平线)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+#显示图例
+plt.legend()
+#自动调整布局，防止标签被遮挡
+plt.tight_layout()
+#显示图表
+plt.show()
